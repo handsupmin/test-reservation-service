@@ -1,13 +1,32 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+from app.db.session import engine
+from app.db.init_db import init_db
 
+def startup():
+    init_db(engine)
+
+def shutdown():
+    pass
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    startup()
+
+    yield
+
+    shutdown()
+
+app = FastAPI(lifespan=lifespan)
+
+# middleware
+app.add_middleware(CORSMiddleware, allow_origins=["*"])
+
+# router
 
 @app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
+def read_root():
+    return {"message": "Welcome to FastAPI!"}
