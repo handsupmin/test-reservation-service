@@ -1,12 +1,15 @@
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.db.session import engine
+from app.api.endpoints import reservation, base
 from app.db.init_db import init_db
 
+
 def startup():
-    init_db(engine)
+    init_db()
+
 
 def shutdown():
     pass
@@ -20,13 +23,12 @@ async def lifespan(app: FastAPI):
 
     shutdown()
 
+
 app = FastAPI(lifespan=lifespan)
 
 # middleware
 app.add_middleware(CORSMiddleware, allow_origins=["*"])
 
 # router
-
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to FastAPI!"}
+app.include_router(base.router, prefix="", tags=["base"])
+app.include_router(reservation.router, prefix="/api", tags=["reservations"])
