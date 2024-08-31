@@ -3,6 +3,7 @@ import os
 
 load_dotenv()
 
+
 class Settings:
     def __init__(self):
         self.POSTGRES_USER = os.getenv("POSTGRES_USER")
@@ -12,5 +13,6 @@ class Settings:
         self.POSTGRES_PORT = os.getenv("POSTGRES_PORT")
 
         self.SQLALCHEMY_DATABASE_URI = f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+
 
 settings = Settings()
